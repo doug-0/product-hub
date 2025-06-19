@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { createProduct } from '@/api/products';
+import { createProduct, generateProductContent } from '@/api/products';
 import type { Product } from '@/types/Product';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -23,25 +23,77 @@ import { Switch } from '@/components/ui/switch';
 import { Avatar, AvatarImage } from '@radix-ui/react-avatar';
 import IconAI from '@/assets/icons/ai-icon.svg';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 type FormData = yup.InferType<typeof productSchema>;
 
 export default function ProductForm() {
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
+    const [isGenerating, setIsGenerating] = useState(false);
+    const [generatedImageUrl, setGeneratedImageUrl] = useState<string | null>(null);
 
     const form = useForm<FormData>({
         resolver: yupResolver(productSchema),
         defaultValues: {
-            generateDescription: true,
+            generateDescription: false,
+            imageUrl: undefined,
+            name: '',
+            description: '',
+            price: 0,
         },
     });
 
-    async function onSubmit(data: FormData) {
-        try {
-            setIsLoading(true);
+    const { watch, setValue } = form;
 
+    const nameValue = watch('name');
+
+    const generateDesc = watch('generateDescription');
+
+    useEffect(() => {
+        if (!generateDesc || !nameValue) return;
+
+        const handler = setTimeout(() => {
+            setIsGenerating(true);
+
+            const promise = generateProductContent({ name: nameValue });
+
+            toast.promise(
+                promise,
+                {
+                    loading: 'Gerando conteúdo via IA...',
+                    success: (result) => {
+                        const { data } = result;
+
+                        if (data.description) {
+                            setValue('description', data.description);
+                        }
+
+                        if (data.imageUrl) {
+                            setValue('imageUrl', data.imageUrl);
+
+                            setGeneratedImageUrl(data.imageUrl);
+                        }
+
+                        if (data.error && Array.isArray(data.error)) {
+                            data.error.forEach((err: { message: string }) => toast.error(err.message));
+                        }
+
+                        setIsGenerating(false);
+
+                        return 'Conteúdo gerado com sucesso';
+                    },
+                    error: 'Falha ao gerar conteúdo via IA',
+                }
+            );
+        }, 1200);
+
+        return () => clearTimeout(handler);
+    }, [nameValue, generateDesc, setValue]);
+
+    const onSubmit = async (data: FormData) => {
+        setIsLoading(true);
+        try {
             await createProduct(data as Product);
 
             toast.success('Produto criado com sucesso');
@@ -66,7 +118,7 @@ export default function ProductForm() {
                                 <FormItem className="w-full md:w-2/3">
                                     <FormLabel>Nome *</FormLabel>
                                     <FormControl>
-                                        <Input {...field} placeholder="Nome do produto" />
+                                        <Input {...field} placeholder="Nome do produto" disabled={isGenerating} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -94,7 +146,12 @@ export default function ProductForm() {
                                             </TooltipContent>
                                         </Tooltip>
                                         <FormControl>
-                                            <Switch onCheckedChange={field.onChange} checked={field.value} className='cursor-pointer' />
+                                            <Switch
+                                                onCheckedChange={field.onChange}
+                                                checked={field.value}
+                                                className='cursor-pointer'
+                                                disabled={isGenerating}
+                                            />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -105,29 +162,34 @@ export default function ProductForm() {
                             <FormItem>
                                 <FormLabel>Descrição *</FormLabel>
                                 <FormControl>
-                                    <Textarea {...field} placeholder="Descrição do produto" />
+                                    <Textarea {...field} placeholder="Descrição do produto" disabled={isGenerating} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
                         )} />
-
-                        <FormField control={form.control} name="imageUrl" render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Imagem do produto</FormLabel>
-                                <FormControl>
-                                    <Input {...field} placeholder="URL da imagem" />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )} />
+                        <FormLabel>Imagem do produto</FormLabel>
+                        {generatedImageUrl ? (
+                            <Card className="mt-4">
+                                <CardContent className="p-0 flex justify-center items-center">
+                                    <img src={generatedImageUrl} alt="Imagem gerada" className="w-full h-auto rounded" style={{ maxWidth: '300px' }} />
+                                </CardContent>
+                            </Card>
+                        ) : (
+                            <Card className="mt-4">
+                                <CardContent className="p-0">
+                                    <p className="text-sm text-gray-500 text-center">A imagem criada pela IA será exibida neste espaço.</p>
+                                </CardContent>
+                            </Card>
+                        )}
                         <InputMoney
                             form={form}
                             name="price"
                             label="Preço *"
                             placeholder="R$ 0,00"
+                            disabled={isGenerating}
                         />
                         <div className="flex justify-center mt-8">
-                            <Button type="submit" className="w-full md:w-1/5" disabled={isLoading}>
+                            <Button type="submit" className="w-full md:w-1/5" disabled={isLoading || isGenerating}>
                                 {isLoading ? 'Carregando...' : 'Adicionar produto'}
                             </Button>
                         </div>

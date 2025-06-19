@@ -14,6 +14,7 @@ type TextInputProps = {
     name: string;
     label: string;
     placeholder: string;
+    disabled?: boolean;
 };
 
 const moneyFormatter = Intl.NumberFormat("pt-BR", {
@@ -62,6 +63,7 @@ export default function InputMoney(props: TextInputProps) {
                                     handleChange(_change, ev.target.value);
                                 }}
                                 value={value}
+                                disabled={props.disabled}
                             />
                         </FormControl>
                         <FormMessage />
