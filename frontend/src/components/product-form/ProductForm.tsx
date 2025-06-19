@@ -50,30 +50,28 @@ export default function ProductForm() {
         }
     }
 
-    console.log(form.watch('generateDescription'));
-
     return (
         <Card className="max-w-full mx-auto mt-8">
             <CardContent>
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 ">
-                        <div className="flex flex-row gap-2 mb-8">
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                        <div className="flex flex-col md:flex-row gap-4 mb-6">
                             <FormField control={form.control} name="name" render={({ field }) => (
-                                <FormItem className="w-1/2">
+                                <FormItem className="w-full md:w-2/3">
                                     <FormLabel>Nome *</FormLabel>
                                     <FormControl>
-                                        <Input {...field} className="w-full" placeholder="Nome do produto" />
+                                        <Input {...field} placeholder="Nome do produto" />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
                             )} />
                             <FormField control={form.control} name="generateDescription" render={({ field }) => (
-                                <FormItem className="flex items-center justify-center gap-2 w-1/3 mt-4">
+                                <FormItem className="flex items-center justify-center gap-2 w-full md:w-1/3 mt-2 md:mt-8">
                                     <Tooltip>
                                         <TooltipTrigger>
-                                            <FormLabel>
+                                            <FormLabel className="flex items-center gap-2 cursor-pointer">
                                                 <Avatar>
-                                                    <AvatarImage src={IconAI} className='w-5 h-5' />
+                                                    <AvatarImage src={IconAI} className="w-5 h-5" />
                                                 </Avatar>
                                                 Gerar descrição e imagem do produto via IA
                                             </FormLabel>
@@ -95,16 +93,17 @@ export default function ProductForm() {
                             <FormItem>
                                 <FormLabel>Descrição *</FormLabel>
                                 <FormControl>
-                                    <Textarea {...field} className="w-full" placeholder="Descrição do produto" />
+                                    <Textarea {...field} placeholder="Descrição do produto" />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
                         )} />
+
                         <FormField control={form.control} name="imageUrl" render={({ field }) => (
                             <FormItem>
                                 <FormLabel>Imagem do produto</FormLabel>
                                 <FormControl>
-                                    <Input {...field} className="w-full" placeholder="URL da imagem" />
+                                    <Input {...field} placeholder="URL da imagem" />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -115,8 +114,8 @@ export default function ProductForm() {
                             label="Preço *"
                             placeholder="R$ 0,00"
                         />
-                        <div className="flex justify-center mt-10">
-                            <Button type="submit" className="w-1/5">
+                        <div className="flex justify-center mt-8">
+                            <Button type="submit" className="w-full md:w-1/3">
                                 Adicionar produto
                             </Button>
                         </div>
