@@ -27,7 +27,11 @@ export default function ProductList() {
             {items.map((p) => (
                 <Card key={p.id} className="hover:shadow-lg">
                     <CardContent>
-                        <img src={p.imageUrl} alt={p.name} className="w-full h-40 object-cover rounded" />
+                        <img
+                            src={`${import.meta.env.VITE_API_URL}${p.imageUrl}`}
+                            alt={p.name}
+                            className="w-full h-40 object-cover rounded"
+                        />
                     </CardContent>
                     <CardHeader>
                         <CardTitle>{p.name}</CardTitle>

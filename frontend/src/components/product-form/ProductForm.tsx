@@ -36,7 +36,7 @@ export default function ProductForm() {
     const form = useForm<FormData>({
         resolver: yupResolver(productSchema),
         defaultValues: {
-            generateDescription: false,
+            generateDescription: true,
             imageUrl: undefined,
             name: '',
             description: '',
