@@ -1,5 +1,9 @@
 import { Request, Response } from 'express';
 import { openai } from '../config/openai';
+import sharp from 'sharp';
+import path from 'path';
+import fs from 'fs/promises';
+import { v4 as uuid } from 'uuid';
 
 export async function generateProductContent(req: Request, res: Response) {
     const { name } = req.body;
@@ -48,7 +52,24 @@ export async function generateProductContent(req: Request, res: Response) {
         const base64Image = (imageResponse.output?.[0] as any)?.result;
 
         if (base64Image) {
-            imageUrl = `data:image/png;base64,${base64Image}`;
+            const imgBuf = Buffer.from(base64Image, 'base64');
+
+            const compressed = await sharp(imgBuf)
+                .resize(512)
+                .jpeg({ quality: 70 })
+                .toBuffer();
+
+            const fileName = `${uuid()}.jpg`;
+
+            const folder = path.resolve(__dirname, '../../public/images');
+
+            await fs.mkdir(folder, { recursive: true });
+
+            const filePath = path.join(folder, fileName);
+
+            await fs.writeFile(filePath, compressed);
+
+            imageUrl = `/images/${fileName}`;
         }
     } catch (err) {
         console.warn('Erro ao gerar imagem com IA: ', err);

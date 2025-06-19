@@ -109,7 +109,7 @@ export default function ProductForm() {
     }
 
     return (
-        <Card className="max-w-full mx-auto mt-8">
+        <Card className="max-w-full mx-auto mt-8 mb-10">
             <CardContent>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -171,7 +171,12 @@ export default function ProductForm() {
                         {generatedImageUrl ? (
                             <Card className="mt-4">
                                 <CardContent className="p-0 flex justify-center items-center">
-                                    <img src={generatedImageUrl} alt="Imagem gerada" className="w-full h-auto rounded" style={{ maxWidth: '300px' }} />
+                                    <img
+                                        src={`${import.meta.env.VITE_API_URL}${generatedImageUrl}`}
+                                        alt="Imagem gerada"
+                                        className="w-full h-auto rounded"
+                                        style={{ maxWidth: '300px' }}
+                                    />
                                 </CardContent>
                             </Card>
                         ) : (
