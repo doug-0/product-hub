@@ -121,7 +121,7 @@ export default function ProductForm() {
                             placeholder="R$ 0,00"
                         />
                         <div className="flex justify-center mt-8">
-                            <Button type="submit" className="w-full md:w-1/3">
+                            <Button type="submit" className="w-full md:w-1/5">
                                 Adicionar produto
                             </Button>
                         </div>
