@@ -65,29 +65,35 @@ export default function ProductForm() {
                                     <FormMessage />
                                 </FormItem>
                             )} />
-                            <FormField control={form.control} name="generateDescription" render={({ field }) => (
-                                <FormItem className="flex items-center justify-center gap-2 w-full md:w-1/3 mt-2 md:mt-8">
-                                    <Tooltip>
-                                        <TooltipTrigger>
-                                            <FormLabel className="flex items-center gap-2 cursor-pointer">
-                                                <Avatar>
-                                                    <AvatarImage src={IconAI} className="w-5 h-5" />
-                                                </Avatar>
-                                                Gerar descrição e imagem do produto via IA
-                                            </FormLabel>
-                                        </TooltipTrigger>
-                                        <TooltipContent>
-                                            <p>
-                                                Ao marcar esta opção, a descrição e a imagem do produto serão geradas automaticamente por IA com base no nome informado.
-                                            </p>
-                                        </TooltipContent>
-                                    </Tooltip>
-                                    <FormControl>
-                                        <Switch onCheckedChange={field.onChange} checked={field.value} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )} />
+                            <FormField
+                                control={form.control}
+                                name="generateDescription"
+                                render={({ field }) => (
+                                    <FormItem className="flex items-center justify-center gap-2 w-full md:w-1/3 mt-2 md:mt-8">
+                                        <Tooltip>
+                                            <TooltipTrigger asChild>
+                                                <div className="flex items-center gap-2">
+                                                    <Avatar>
+                                                        <AvatarImage src={IconAI} className="w-5 h-5" />
+                                                    </Avatar>
+                                                    <span className="text-sm">
+                                                        Gerar descrição e imagem do produto via IA
+                                                    </span>
+                                                </div>
+                                            </TooltipTrigger>
+                                            <TooltipContent>
+                                                <p>
+                                                    Ao marcar esta opção, a descrição e a imagem do produto serão geradas automaticamente por IA com base no nome informado.
+                                                </p>
+                                            </TooltipContent>
+                                        </Tooltip>
+                                        <FormControl>
+                                            <Switch onCheckedChange={field.onChange} checked={field.value} className='cursor-pointer' />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
                         </div>
                         <FormField control={form.control} name="description" render={({ field }) => (
                             <FormItem>
