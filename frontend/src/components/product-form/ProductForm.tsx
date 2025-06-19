@@ -1,54 +1,128 @@
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { useNavigate } from 'react-router-dom';
 import { createProduct } from '@/api/products';
+import type { Product } from '@/types/Product';
+import { useNavigate } from 'react-router-dom';
+import {
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { productSchema } from '@/schemas/productSchema';
+import { toast } from 'sonner';
+import InputMoney from '@/components/ui/input-money';
+import { Card, CardContent } from '@/components/ui/card';
+import { Textarea } from '@/components/ui/textarea';
+import { Switch } from '@/components/ui/switch';
+import { Avatar, AvatarImage } from '@radix-ui/react-avatar';
+import IconAI from '@/assets/icons/ai-icon.svg';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 type FormData = yup.InferType<typeof productSchema>;
 
 export default function ProductForm() {
-  const nav = useNavigate();
+    const navigate = useNavigate();
 
-  const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
-    resolver: yupResolver(productSchema),
-  });
+    const form = useForm<FormData>({
+        resolver: yupResolver(productSchema),
+        defaultValues: {
+            generateDescription: true,
+        },
+    });
 
-  const onSubmit = async (data: FormData) => {
-    try {
-      await createProduct(data);
+    async function onSubmit(data: FormData) {
+        try {
+            await createProduct(data as Product);
 
-      nav('/');
-    } catch (err) {
-      console.error(err);
+            toast.success('Product created successfully');
 
-      alert('Failed to create product');
+            navigate('/');
+        } catch (error) {
+            toast.error('Failed to create product', {
+                description: 'Please try again',
+            });
+        }
     }
-  };
 
-  return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <div>
-        <label>Name</label>
-        <input {...register('name')} />
-        <p>{errors.name?.message}</p>
-      </div>
-      <div>
-        <label>Description</label>
-        <textarea {...register('description')} />
-        <p>{errors.description?.message}</p>
-      </div>
-      <div>
-        <label>Price</label>
-        <input type="number" step="0.01" {...register('price')} />
-        <p>{errors.price?.message}</p>
-      </div>
-      <div>
-        <label>Image URL</label>
-        <input {...register('imageUrl')} />
-        <p>{errors.imageUrl?.message}</p>
-      </div>
-      <button type="submit">Create</button>
-    </form>
-  );
+    console.log(form.watch('generateDescription'));
+
+    return (
+        <Card className="max-w-full mx-auto mt-8">
+            <CardContent>
+                <Form {...form}>
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 ">
+                        <div className="flex flex-row gap-2 mb-8">
+                            <FormField control={form.control} name="name" render={({ field }) => (
+                                <FormItem className="w-1/2">
+                                    <FormLabel>Nome *</FormLabel>
+                                    <FormControl>
+                                        <Input {...field} className="w-full" placeholder="Nome do produto" />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )} />
+                            <FormField control={form.control} name="generateDescription" render={({ field }) => (
+                                <FormItem className="flex items-center justify-center gap-2 w-1/3 mt-4">
+                                    <Tooltip>
+                                        <TooltipTrigger>
+                                            <FormLabel>
+                                                <Avatar>
+                                                    <AvatarImage src={IconAI} className='w-5 h-5' />
+                                                </Avatar>
+                                                Gerar descrição e imagem do produto via IA
+                                            </FormLabel>
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                            <p>
+                                                Ao marcar esta opção, a descrição e a imagem do produto serão geradas automaticamente por IA com base no nome informado.
+                                            </p>
+                                        </TooltipContent>
+                                    </Tooltip>
+                                    <FormControl>
+                                        <Switch onCheckedChange={field.onChange} checked={field.value} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )} />
+                        </div>
+                        <FormField control={form.control} name="description" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Descrição *</FormLabel>
+                                <FormControl>
+                                    <Textarea {...field} className="w-full" placeholder="Descrição do produto" />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )} />
+                        <FormField control={form.control} name="imageUrl" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Imagem do produto</FormLabel>
+                                <FormControl>
+                                    <Input {...field} className="w-full" placeholder="URL da imagem" />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )} />
+                        <InputMoney
+                            form={form}
+                            name="price"
+                            label="Preço *"
+                            placeholder="R$ 0,00"
+                        />
+                        <div className="flex justify-center mt-10">
+                            <Button type="submit" className="w-1/5">
+                                Adicionar produto
+                            </Button>
+                        </div>
+                    </form>
+                </Form>
+            </CardContent>
+        </Card>
+    );
 }

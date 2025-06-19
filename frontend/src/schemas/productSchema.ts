@@ -1,8 +1,9 @@
 import * as yup from 'yup';
 
 export const productSchema = yup.object({
-  name: yup.string().required('Name is required'),
-  description: yup.string().required('Description is required'),
-  price: yup.number().min(0, 'Price must be zero or positive').required('Price is required'),
-  imageUrl: yup.string().url('Must be a valid URL').required('Image URL is required'),
+  name: yup.string().required('Nome é obrigatório'),
+  description: yup.string().max(200, 'Descrição deve ter no máximo 200 caracteres').required('Descrição é obrigatória'),
+  price: yup.number().min(0, 'Preço deve ser zero ou positivo').required('Preço é obrigatório'),
+  imageUrl: yup.string().url('Deve ser uma URL válida').required('URL da imagem é obrigatória'),
+  generateDescription: yup.boolean().default(true),
 });
