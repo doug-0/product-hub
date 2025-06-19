@@ -23,11 +23,13 @@ import { Switch } from '@/components/ui/switch';
 import { Avatar, AvatarImage } from '@radix-ui/react-avatar';
 import IconAI from '@/assets/icons/ai-icon.svg';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { useState } from 'react';
 
 type FormData = yup.InferType<typeof productSchema>;
 
 export default function ProductForm() {
     const navigate = useNavigate();
+    const [isLoading, setIsLoading] = useState(false);
 
     const form = useForm<FormData>({
         resolver: yupResolver(productSchema),
@@ -38,15 +40,19 @@ export default function ProductForm() {
 
     async function onSubmit(data: FormData) {
         try {
+            setIsLoading(true);
+
             await createProduct(data as Product);
 
-            toast.success('Product created successfully');
+            toast.success('Produto criado com sucesso');
 
             navigate('/');
         } catch (error) {
-            toast.error('Failed to create product', {
-                description: 'Please try again',
+            toast.error('Falha ao criar produto', {
+                description: 'Por favor, tente novamente',
             });
+        } finally {
+            setIsLoading(false);
         }
     }
 
@@ -121,8 +127,8 @@ export default function ProductForm() {
                             placeholder="R$ 0,00"
                         />
                         <div className="flex justify-center mt-8">
-                            <Button type="submit" className="w-full md:w-1/5">
-                                Adicionar produto
+                            <Button type="submit" className="w-full md:w-1/5" disabled={isLoading}>
+                                {isLoading ? 'Carregando...' : 'Adicionar produto'}
                             </Button>
                         </div>
                     </form>

@@ -2,7 +2,7 @@ import type { Product } from '@/types/Product';
 import axios from 'axios';
 
 export const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000',
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000',
 });
 
 export const getProducts = () => api.get<Product[]>('/products');
