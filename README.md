@@ -23,6 +23,15 @@ Uma aplicação web onde os usuários podem **cadastrar** e **visualizar produto
 | GET    | /products       | Lista todos os produtos |
 | POST   | /products       | Cria um novo produto    |
 
+```bash
+{
+  "name": "Tênis Preto com Sola Branca",
+  "description": "Um tênis elegante e confortável, ideal para uso diário.",
+  "price": 299.90,
+  "imageUrl": "https://exemplo.com/imagens/tenis-preto.png"
+}
+```
+
 - ✅ Integração com serviço de IA para gerar descrições e imagens
 - ✅ Persistência dos dados usando MongoDB
 
@@ -63,7 +72,7 @@ Com base no texto descritivo do produto, a aplicação gera uma imagem utilizand
 ```bash
 git clone git@github.com:doug-0/product-hub.git
 
-cd product-catalog-app
+cd product-hub
 ```
 
 ### Frontend
